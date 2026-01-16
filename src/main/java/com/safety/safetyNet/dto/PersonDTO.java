@@ -1,4 +1,4 @@
-package com.safety.safetyNet.dto;
+package com.safety.safetynet.dto;
 
 public class PersonDTO {
     

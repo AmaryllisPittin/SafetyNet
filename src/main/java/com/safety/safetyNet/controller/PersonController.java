@@ -1,4 +1,4 @@
-package com.safety.safetyNet.controller;
+package com.safety.safetynet.controller;
 
 public class PersonController {
     

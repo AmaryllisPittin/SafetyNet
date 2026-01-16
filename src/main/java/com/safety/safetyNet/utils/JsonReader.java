@@ -1,8 +1,8 @@
-package com.safety.safetyNet.utils;
-import com.safety.safetyNet.model.Person;
+package com.safety.safetynet.utils;
+import com.safety.safetynet.model.Person;
 
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.InputStream;
 import java.util.List;

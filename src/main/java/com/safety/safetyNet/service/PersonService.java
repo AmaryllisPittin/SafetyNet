@@ -1,7 +1,7 @@
-package com.safety.safetyNet.service;
+package com.safety.safetynet.service;
 
-import com.safety.safetyNet.model.Person;
-import com.safety.safetyNet.utils.JsonReader;
+import com.safety.safetynet.model.Person;
+import com.safety.safetynet.utils.JsonReader;
 
 import java.util.List;
 
