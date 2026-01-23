@@ -1,11 +1,11 @@
 package com.safety.safetynet.model;
 
-public class FireStation {
+public class FireStations {
     private String address;
     private String station;
 
 
-public FireStation() {}
+public FireStations() {}
 
 public String getAddress() { return address; }
 public String getStation() { return station; }
