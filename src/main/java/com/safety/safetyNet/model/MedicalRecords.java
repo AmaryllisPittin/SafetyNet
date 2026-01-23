@@ -2,14 +2,14 @@ package com.safety.safetynet.model;
 
 import java.util.List;
 
-public class MedicalRecord {
+public class MedicalRecords {
     private String firstName;
     private String lastName;
     private String birthdate;
     private List<String> medications;
     private List<String> allergies;
 
-public MedicalRecord() {}
+public MedicalRecords() {}
 
 public String getFirstName() { return firstName; }
 public String getLastName() { return lastName; }

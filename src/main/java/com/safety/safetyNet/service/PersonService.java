@@ -1,9 +1,9 @@
 package com.safety.safetynet.service;
 
+import java.util.List;
+
 import com.safety.safetynet.model.Person;
 import com.safety.safetynet.utils.JsonReader;
-
-import java.util.List;
 
 public class PersonService {
     
