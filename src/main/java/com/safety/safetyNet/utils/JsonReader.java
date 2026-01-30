@@ -27,7 +27,7 @@ public class JsonReader {
 
     }
 
-        public static List<MedicalRecords> readMedicalRecords() throws Exception {
+    public static List<MedicalRecords> readMedicalRecords() throws Exception {
 
         ObjectMapper mapper = new ObjectMapper();
         InputStream is = JsonReader.class.getResourceAsStream(FILE_PATH);

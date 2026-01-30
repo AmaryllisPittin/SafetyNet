@@ -21,5 +21,6 @@ public void setFirstName(String firstName) { this.firstName = firstName; }
 public void setLastName(String lastName) { this.lastName = lastName; }
 public void setBirthdate(String birthdate) { this.birthdate = birthdate; }
 public void setMedications(List<String> medications) { this.medications = medications; }
+public void setAllergies(List<String> allergies) { this.allergies = allergies; }
 
 };

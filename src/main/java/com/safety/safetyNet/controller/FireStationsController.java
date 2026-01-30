@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.safety.safetynet.model.FireStations;
 import com.safety.safetynet.service.FireStationsService;
 
+
 public class FireStationsController {
     
     private final FireStationsService fireStationsService;
