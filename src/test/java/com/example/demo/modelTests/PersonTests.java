@@ -9,14 +9,15 @@ public class PersonTests {
     @Test
     void TestGettersAndSetters() {
 
-        Person person = new Person();
-        person.setFirstName("John");
-        person.setLastName("Boyd");
-        person.setAddress("1509 Culver St");
-        person.setCity("Culver");
-        person.setZip("97451");
-        person.setPhone("841-874-6512");
-        person.setEmail("jaboyd@email.com");
+        Person person = new Person(
+            "John",
+            "Boyd",
+            "1509 Culver St",
+            "Culver",
+            "97451",
+            "841-874-6512",
+            "jaboyd@email.com"
+        );
 
         assertEquals("John", person.getFirstName());
         assertEquals("Boyd", person.getLastName());

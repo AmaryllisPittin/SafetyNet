@@ -23,11 +23,11 @@ public class FireStationsController {
         this.fireStationsService = fireStationsService;
     }
 
-    @GetMapping("/firestations")
+    @GetMapping("/medicalRecord")
     public List<FireStations> getAllMedicalRecords() throws Exception {
         return fireStationsService.getAllFireStations();
     }
-    @GetMapping("/firestation?stationNumber=<station_number>")
+    @GetMapping("/firestations")
     public Map<String, Object> getPersonByStation(@RequestParam String station) throws Exception {
         int stationNumber = Integer.parseInt(station);
         List<PersonDTO> persons =  fireStationsService.getPersonByStation(stationNumber);
