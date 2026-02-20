@@ -23,9 +23,9 @@ public class PersonMapper {
     }
 
 
-public static boolean isMinor(MedicalRecords medicalRecord) {
-    
-    LocalDate birthDate = LocalDate.parse(medicalRecord.getBirthdate(), FORMATTER);
-    return Period.between(birthDate, LocalDate.now()).getYears() <= 18;
-}
+    public static boolean isMinor(MedicalRecords medicalRecord) {
+        
+        LocalDate birthDate = LocalDate.parse(medicalRecord.getBirthdate(), FORMATTER);
+        return Period.between(birthDate, LocalDate.now()).getYears() <= 18;
+    }
 }
