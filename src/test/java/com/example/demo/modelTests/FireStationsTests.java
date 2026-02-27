@@ -3,13 +3,13 @@ package com.example.demo.modelTests;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
-import com.safety.safetynet.model.FireStations;
+import com.safety.safetynet.model.FireStation;
 
 public class FireStationsTests {
     @Test
     void TestGettersAndSetters() {
 
-        FireStations fireStations = new FireStations();
+        FireStation fireStations = new FireStation();
         fireStations.setAddress("1509 Culver St");
         fireStations.setStation("3");
 
@@ -18,4 +18,3 @@ public class FireStationsTests {
 
     }
 }
-
