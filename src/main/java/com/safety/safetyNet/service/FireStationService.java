@@ -1,14 +1,17 @@
 package com.safety.safetynet.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.safety.safetynet.dto.ChildAlertDTO;
 import com.safety.safetynet.dto.PersonDTO;
 import com.safety.safetynet.mapper.PersonMapper;
 import com.safety.safetynet.model.FireStation;
+import com.safety.safetynet.model.MedicalRecord;
 import com.safety.safetynet.model.Person;
 import com.safety.safetynet.utils.JsonReader;
 
@@ -70,6 +73,48 @@ public class FireStationService {
             JsonReader.writeFireStation(fireStations);
         }
         return removed;
+    }
+
+    // URL: http://localhost:8080/childAlert?address=<address>
+    public List<ChildAlertDTO> getChildrenByAddress(String address) throws Exception {
+        List<Person> persons = JsonReader.readPersons();
+        List<MedicalRecord> medicalRecords = JsonReader.readMedicalRecord();
+
+        // Les personnes qui vivent à cette addresse
+        List<Person> household = persons.stream()
+                .filter(p -> p.getAddress().equalsIgnoreCase(address))
+                .toList();
+
+        List<ChildAlertDTO> children = new ArrayList<>();
+
+        for (Person person : household) {
+
+            MedicalRecord mr = medicalRecords.stream()
+                    .filter(m -> m.getFirstName().equals(person.getFirstName())
+                            && m.getLastName().equals(person.getLastName()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (mr != null && PersonMapper.isMinor(mr)) {
+
+                ChildAlertDTO dto = new ChildAlertDTO();
+                dto.setFirstName(person.getFirstName());
+                dto.setLastName(person.getLastName());
+                dto.setAge(PersonMapper.calculateAge(mr));
+
+                List<String> otherMembers = household.stream()
+                        .filter(p -> !(p.getFirstName().equals(person.getFirstName())
+                                && p.getLastName().equals(person.getLastName())))
+                        .map(p -> p.getFirstName() + " " + p.getLastName())
+                        .toList();
+
+                dto.setHouseholdMembers(otherMembers);
+
+                children.add(dto);
+            }
+        }
+
+        return children;
     }
 
 }

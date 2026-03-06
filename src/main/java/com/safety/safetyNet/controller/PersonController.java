@@ -20,7 +20,7 @@ import com.safety.safetynet.service.PersonService;
 @RequestMapping("/persons")
 public class PersonController {
 
-    private final  PersonService personService;
+    private final PersonService personService;
 
     public PersonController(PersonService personService) {
         this.personService = personService;
@@ -36,13 +36,13 @@ public class PersonController {
         }
     }
 
-    //Méthode GET
+    // Méthode GET
     @GetMapping("/{firstName}")
     public ResponseEntity<Person> getPersonByFirstName(@PathVariable String firstName) {
         try {
             return personService.getPersonByFirstName(firstName)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -56,7 +56,8 @@ public class PersonController {
     }
 
     @PutMapping("/{firstName}")
-    public ResponseEntity<Void> updatePerson(@PathVariable String firstName, @RequestBody Person updatedPerson) throws Exception {
+    public ResponseEntity<Void> updatePerson(@PathVariable String firstName, @RequestBody Person updatedPerson)
+            throws Exception {
         boolean updated = personService.updatePerson(firstName, updatedPerson);
         return updated ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
@@ -68,5 +69,3 @@ public class PersonController {
     }
 
 }
-    
-

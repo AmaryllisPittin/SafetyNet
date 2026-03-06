@@ -1,10 +1,12 @@
 package com.safety.safetynet.dto;
 
-public class PersonDTO {
+import java.util.List;
+
+public class ChildAlertDTO {
     private String firstName;
     private String lastName;
-    private String address;
-    private String phone;
+    private int age;
+    private List<String> householdMembers;
 
     public String getFirstName() {
         return firstName;
@@ -22,20 +24,19 @@ public class PersonDTO {
         this.lastName = lastName;
     }
 
-    public String getAddress() {
-        return address;
+    public int getAge() {
+        return age;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setAge(int age) {
+        this.age = age;
     }
 
-    public String getPhone() {
-        return phone;
+    public List<String> getHouseholdMembers() {
+        return householdMembers;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setHouseholdMembers(List<String> householdMembers) {
+        this.householdMembers = householdMembers;
     }
-
 }

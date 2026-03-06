@@ -26,4 +26,9 @@ public class PersonMapper {
         LocalDate birthDate = LocalDate.parse(medicalRecord.getBirthdate(), FORMATTER);
         return Period.between(birthDate, LocalDate.now()).getYears() <= 18;
     }
+
+    public static int calculateAge(MedicalRecord medicalRecord) {
+        LocalDate birthDate = LocalDate.parse(medicalRecord.getBirthdate(), FORMATTER);
+        return Period.between(birthDate, LocalDate.now()).getYears();
+    }
 }

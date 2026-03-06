@@ -102,4 +102,5 @@ public class FireStationController {
         boolean deleted = fireStationService.deleteFireStation(address);
         return deleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
+
 }
