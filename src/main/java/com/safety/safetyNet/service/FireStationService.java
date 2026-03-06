@@ -117,4 +117,24 @@ public class FireStationService {
         return children;
     }
 
+    // URL: http://localhost:8080/phoneAlert?firestation=%3Cfirestation_number
+    public List<String> getPhoneNumbersByStation(String stationNumber) throws Exception {
+        List<Person> persons = JsonReader.readPersons();
+        List<FireStation> fireStations = JsonReader.readFireStations();
+
+        // Récupération des adresses des personnes couvertes par la station
+        List<String> addresses = fireStations.stream()
+                .filter(fs -> fs.getStation().equals(stationNumber))
+                .map(FireStation::getAddress)
+                .toList();
+
+        List<String> phoneNumbers = persons.stream()
+                .filter(p -> addresses.contains(p.getAddress()))
+                .map(Person::getPhone)
+                .distinct()
+                .toList();
+
+        return phoneNumbers;
+    }
+
 }
