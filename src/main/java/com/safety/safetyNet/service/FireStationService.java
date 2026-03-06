@@ -1,6 +1,7 @@
 package com.safety.safetynet.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -8,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.safety.safetynet.dto.ChildAlertDTO;
+import com.safety.safetynet.dto.FireDTO;
 import com.safety.safetynet.dto.PersonDTO;
 import com.safety.safetynet.mapper.PersonMapper;
 import com.safety.safetynet.model.FireStation;
@@ -135,6 +137,58 @@ public class FireStationService {
                 .toList();
 
         return phoneNumbers;
+    }
+
+    // URL: http://localhost:8080/fire?address=<address>
+    public List<FireDTO> getPersonsByAddress(String address) throws Exception {
+
+        // Etape 1: Lecture des données
+        List<Person> persons = JsonReader.readPersons();
+        List<FireStation> fireStations = JsonReader.readFireStations();
+        List<MedicalRecord> medicalRecords = JsonReader.readMedicalRecord();
+
+        // Etape 2: Trouver le numéro de la caserne pour l'adresse
+        String stationNumber = fireStations.stream()
+                .filter(fs -> fs.getAddress().equalsIgnoreCase(address))
+                .map(FireStation::getStation)
+                .findFirst()
+                .orElse("Inconnu");
+
+        // Etape 3: Filtre des habitants qui vivent à cette adresse
+        List<Person> residents = persons.stream()
+                .filter(p -> p.getAddress().equalsIgnoreCase(address))
+                .toList();
+
+        // Création DTO
+        List<FireDTO> fireDTOs = residents.stream().map(p -> {
+            FireDTO dto = new FireDTO();
+            dto.setFirstName(p.getFirstName());
+            dto.setLastName(p.getLastName());
+            dto.setPhone(p.getPhone());
+
+            // Trouver le medicalRecord qui correspond
+            MedicalRecord mr = medicalRecords.stream()
+                    .filter(m -> m.getFirstName().equals(p.getFirstName())
+                            && m.getLastName().equals(p.getLastName()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (mr != null) {
+                dto.setAge(PersonMapper.calculateAge(mr));
+                dto.setMedications(mr.getMedications());
+                dto.setAllergies(mr.getAllergies());
+            } else {
+                dto.setAge(0);
+                dto.setMedications(Collections.emptyList());
+                dto.setAllergies(Collections.emptyList());
+            }
+
+            dto.setStation(stationNumber);
+
+            return dto;
+        }).toList();
+
+        return fireDTOs;
     }
 
 }
