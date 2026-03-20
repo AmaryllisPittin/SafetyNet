@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.safety.safetynet.model.Person;
 import com.safety.safetynet.service.PersonService;
 
 @RestController
-@RequestMapping("/persons")
 public class PersonController {
 
     private final PersonService personService;
@@ -26,6 +26,23 @@ public class PersonController {
         this.personService = personService;
     }
 
+    // http://localhost:8080/personInfolastName=%3ClastName
+    @GetMapping("/personInfolastName")
+    public ResponseEntity<List<Person>> getPersonByLastName(@RequestParam("lastName") String lastName)
+            throws Exception {
+        try {
+            List<Person> persons = personService.getPersonByLastName(lastName);
+            if (persons.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(persons);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @RequestMapping("/persons")
     @GetMapping
     public ResponseEntity<List<Person>> getAllPersons() throws Exception {
         try {
@@ -38,11 +55,12 @@ public class PersonController {
 
     // Méthode GET
     @GetMapping("/{firstName}/{lastName}")
-    public ResponseEntity<Person> getPersonByFirstName(@PathVariable String firstName) {
+    public ResponseEntity<List<Person>> getPersonByName(@PathVariable String firstName, @PathVariable String lastName) {
         try {
-            return personService.getPersonByFirstName(firstName)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
+            List<Person> persons = personService.getPersonByName(firstName, lastName);
+            if (persons.isEmpty())
+                return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(persons);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -56,15 +74,17 @@ public class PersonController {
     }
 
     @PutMapping("/{firstName}/{lastName}")
-    public ResponseEntity<Void> updatePerson(@PathVariable String firstName, @RequestBody Person updatedPerson)
+    public ResponseEntity<Void> updatePerson(@PathVariable String firstName, @PathVariable String lastName,
+            @RequestBody Person updatedPerson)
             throws Exception {
-        boolean updated = personService.updatePerson(firstName, updatedPerson);
+        boolean updated = personService.updatePerson(firstName, lastName, updatedPerson);
         return updated ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{firstName}/{lastName}")
-    public ResponseEntity<Void> deletePerson(@PathVariable String firstName) throws Exception {
-        boolean deleted = personService.deletePerson(firstName);
+    public ResponseEntity<Void> deletePerson(@PathVariable String firstName, @PathVariable String lastName)
+            throws Exception {
+        boolean deleted = personService.deletePerson(firstName, lastName);
         return deleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
