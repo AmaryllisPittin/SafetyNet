@@ -10,7 +10,7 @@ import com.safety.safetynet.model.Person;
 
 public class PersonMapper {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     public static PersonDTO toDTO(Person person) {
         PersonDTO dto = new PersonDTO();

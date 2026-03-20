@@ -24,7 +24,7 @@ import com.safety.safetynet.service.FireStationService;
 import com.safety.safetynet.utils.JsonReader;
 
 @RestController
-@RequestMapping("/firestations")
+@RequestMapping("/firestation")
 public class FireStationController {
 
     private final FireStationService fireStationService;
@@ -56,8 +56,9 @@ public class FireStationController {
         }
     }
 
-    @GetMapping("?stationNumber=<station_number>")
-    public Map<String, Object> getPersonByStation(@RequestParam String station) throws Exception {
+    // http://localhost:8080/firestation?stationNumber=<station_number>
+    @GetMapping("firestation")
+    public Map<String, Object> getPersonByStation(@RequestParam("stationNumber") String station) throws Exception {
         int stationNumber = Integer.parseInt(station);
         List<PersonDTO> persons = fireStationService.getPersonByStation(stationNumber);
         List<MedicalRecord> medicalRecords = JsonReader.readMedicalRecord();

@@ -37,7 +37,7 @@ public class MedicalRecordController {
     }
 
     // Méthode GET
-    @GetMapping("/{firstName}")
+    @GetMapping("/{firstName}/{lastName}")
     public ResponseEntity<MedicalRecord> getMedicalRecordByFirstName(@PathVariable String firstName) {
         try {
             return medicalRecordService.getMedicalRecordByFirstName(firstName)
@@ -55,14 +55,14 @@ public class MedicalRecordController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping("/{firstName}")
+    @PutMapping("/{firstName}/{lastName}")
     public ResponseEntity<Void> updateMedicalRecord(@PathVariable String firstName,
             @RequestBody MedicalRecord updatedMedicalRecord) throws Exception {
         boolean updated = medicalRecordService.updateMedicalRecord(firstName, updatedMedicalRecord);
         return updated ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{firstName}")
+    @DeleteMapping("/{firstName}/{lastName}")
     public ResponseEntity<Void> deleteMedicalRecord(@PathVariable String firstName) throws Exception {
         boolean deleted = medicalRecordService.deleteMedicalRecord(firstName);
         return deleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();

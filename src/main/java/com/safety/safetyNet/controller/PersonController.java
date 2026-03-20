@@ -37,7 +37,7 @@ public class PersonController {
     }
 
     // Méthode GET
-    @GetMapping("/{firstName}")
+    @GetMapping("/{firstName}/{lastName}")
     public ResponseEntity<Person> getPersonByFirstName(@PathVariable String firstName) {
         try {
             return personService.getPersonByFirstName(firstName)
@@ -55,14 +55,14 @@ public class PersonController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping("/{firstName}")
+    @PutMapping("/{firstName}/{lastName}")
     public ResponseEntity<Void> updatePerson(@PathVariable String firstName, @RequestBody Person updatedPerson)
             throws Exception {
         boolean updated = personService.updatePerson(firstName, updatedPerson);
         return updated ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{firstName}")
+    @DeleteMapping("/{firstName}/{lastName}")
     public ResponseEntity<Void> deletePerson(@PathVariable String firstName) throws Exception {
         boolean deleted = personService.deletePerson(firstName);
         return deleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
