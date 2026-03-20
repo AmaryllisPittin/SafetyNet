@@ -42,6 +42,26 @@ public class PersonController {
         }
     }
 
+    // http://localhost:8080/communityEmail?city=%3Ccity
+    @GetMapping("/communityEmail")
+    public ResponseEntity<List<String>> getEmailByCity(@RequestParam("city") String city)
+            throws Exception {
+        try {
+            List<String> emails = personService.getAllPersons().stream()
+                    .filter(p -> p.getCity().equalsIgnoreCase(city))
+                    .map(Person::getEmail)
+                    .toList();
+
+            if (emails.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(emails);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @RequestMapping("/persons")
     @GetMapping
     public ResponseEntity<List<Person>> getAllPersons() throws Exception {
