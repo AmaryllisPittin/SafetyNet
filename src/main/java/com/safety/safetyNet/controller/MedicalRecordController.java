@@ -63,8 +63,8 @@ public class MedicalRecordController {
     }
 
     @DeleteMapping("/{firstName}/{lastName}")
-    public ResponseEntity<Void> deleteMedicalRecord(@PathVariable String firstName) throws Exception {
-        boolean deleted = medicalRecordService.deleteMedicalRecord(firstName);
+    public ResponseEntity<Void> deleteMedicalRecord(@PathVariable String firstName, String lastName) throws Exception {
+        boolean deleted = medicalRecordService.deleteMedicalRecord(firstName, lastName);
         return deleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 

@@ -74,10 +74,16 @@ public class PersonController {
     }
 
     // Méthode GET
-    @GetMapping("/{firstName}/{lastName}")
-    public ResponseEntity<List<Person>> getPersonByName(@PathVariable String firstName, @PathVariable String lastName) {
+    @GetMapping("/persons")
+    public ResponseEntity<List<Person>> getPersonByName(@RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName) throws Exception {
         try {
-            List<Person> persons = personService.getPersonByName(firstName, lastName);
+            List<Person> persons;
+            if (firstName != null && lastName != null) {
+                persons = personService.getPersonByName(firstName, lastName);
+            } else {
+                persons = personService.getAllPersons();
+            }
             if (persons.isEmpty())
                 return ResponseEntity.notFound().build();
             return ResponseEntity.ok(persons);

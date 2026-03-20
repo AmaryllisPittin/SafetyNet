@@ -11,6 +11,12 @@ import com.safety.safetynet.utils.JsonReader;
 @Service
 public class PersonService {
 
+    private final MedicalRecordService medicalRecordService;
+
+    public PersonService(MedicalRecordService medicalRecordService) {
+        this.medicalRecordService = medicalRecordService;
+    }
+
     public List<Person> getAllPersons() throws Exception {
         return JsonReader.readPersons();
     }
@@ -59,6 +65,7 @@ public class PersonService {
         boolean removed = persons.removeIf(p -> matchFullName(p, firstName, lastName));
         if (removed) {
             JsonReader.writePersons(persons);
+            medicalRecordService.deleteMedicalRecord(firstName, lastName);
         }
         return removed;
     }

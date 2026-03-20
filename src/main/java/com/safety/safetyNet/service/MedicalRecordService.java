@@ -42,9 +42,10 @@ public class MedicalRecordService {
         return false;
     }
 
-    public boolean deleteMedicalRecord(String firstName) throws Exception {
+    public boolean deleteMedicalRecord(String firstName, String lastName) throws Exception {
         List<MedicalRecord> medicalRecords = getAllMedicalRecords();
-        boolean removed = medicalRecords.removeIf(p -> p.getFirstName().equalsIgnoreCase(firstName));
+        boolean removed = medicalRecords.removeIf(p -> p.getFirstName().equalsIgnoreCase(firstName.trim())
+                && p.getLastName().equalsIgnoreCase(lastName.trim()));
         if (removed) {
             JsonReader.writeMedicalRecord(medicalRecords);
         }
