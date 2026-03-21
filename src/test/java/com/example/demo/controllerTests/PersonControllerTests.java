@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -17,14 +19,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safety.safetynet.controller.PersonController;
 import com.safety.safetynet.model.Person;
 import com.safety.safetynet.service.PersonService;
-
-
 
 @WebMvcTest(PersonController.class)
 @ContextConfiguration(classes = com.safety.safetynet.MainSafetyNet.class)
@@ -45,32 +46,32 @@ public class PersonControllerTests {
         Person p2 = new Person("Jacob", "Boyd", "1509 Culver St", "Culver", "97451", "841-874-6513", "drk@email.com");
         List<Person> persons = Arrays.asList(p1, p2);
 
-        //Mock du service
+        // Mock du service
         when(personService.getAllPersons()).thenReturn(persons);
 
-        //Test sur l'endpoint
+        // Test sur l'endpoint
         mockMvc.perform(get("/persons")
-                            .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isOk())
-                        .andExpect(content().json(objectMapper.writeValueAsString(persons)));
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(persons)));
 
-        //Vérification que le service n'est appelé qu'une fois
+        // Vérification que le service n'est appelé qu'une fois
         verify(personService, times(1)).getAllPersons();
         verifyNoMoreInteractions(personService);
     }
 
     @Test
     void shouldGetAllPersonsReturnEmptyList() throws Exception {
-    
+
         when(personService.getAllPersons()).thenReturn(Collections.emptyList());
 
-                mockMvc.perform(get("/persons")
-                            .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isOk())
-                        .andExpect(content().json("[]"));
+        mockMvc.perform(get("/persons")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[]"));
 
-                verify(personService, times(1)).getAllPersons();
-                verifyNoMoreInteractions(personService);
+        verify(personService, times(1)).getAllPersons();
+        verifyNoMoreInteractions(personService);
     }
 
     @Test
@@ -78,12 +79,27 @@ public class PersonControllerTests {
         when(personService.getAllPersons()).thenThrow(new RuntimeException("Service failure"));
 
         mockMvc.perform(get("/persons")
-                    .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isInternalServerError());
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
 
         verify(personService, times(1)).getAllPersons();
         verifyNoMoreInteractions(personService);
-        
+    }
+
+    @Test
+    void getPersonByName_shouldReturn200() throws Exception {
+        Person tessa = new Person("Tessa", "Carman", "834 Binoc Ave", "Culver", "97451", "841-874-6512",
+                "tenz@email.com");
+        Mockito.when(personService.getPersonByName("Tessa", "Carman"))
+                .thenReturn(List.of(tessa));
+
+        mockMvc.perform(
+                get("/persons")
+                        .param("firstName", "Tessa")
+                        .param("lastName", "Carman"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].firstName").value("Tessa"))
+                .andExpect(jsonPath("$[0].lastName").value("Carman"));
     }
 
 }
