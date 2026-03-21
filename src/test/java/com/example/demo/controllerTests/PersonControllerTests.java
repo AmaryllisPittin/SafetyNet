@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safety.safetynet.controller.PersonController;
@@ -100,6 +101,16 @@ public class PersonControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].firstName").value("Tessa"))
                 .andExpect(jsonPath("$[0].lastName").value("Carman"));
+    }
+
+    @Test
+    void deletePerson_shouldReturnOk() throws Exception {
+        Mockito.when(personService.deletePerson("Tessa", "Carman")).thenReturn(true);
+
+        mockMvc.perform(delete("/persons/Tessa/Carman"))
+                .andExpect(status().isOk());
+
+        Mockito.verify(personService).deletePerson("Tessa", "Carman");
     }
 
 }
