@@ -15,22 +15,34 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class LoggingFilter extends OncePerRequestFilter {
 
-    private static final Logger requestLogger  = LoggerFactory.getLogger(LoggingFilter.class);
+    private static final Logger requestLogger = LoggerFactory.getLogger(LoggingFilter.class);
 
     @Override
     protected void doFilterInternal(
-        HttpServletRequest request,
-        HttpServletResponse response,
-        FilterChain filterChain)
-        throws ServletException, IOException {
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain)
+            throws ServletException, IOException {
 
-            requestLogger.info("=> {} {}", request.getMethod(), request.getRequestURI());
+        requestLogger.info("=> {} {}", request.getMethod(), request.getRequestURI());
 
+        try {
             filterChain.doFilter(request, response);
-
-            requestLogger.info("<= Status {}", response.getStatus());
-
+        } catch (Exception e) {
+            requestLogger.error("Erreur lors du traitement", e);
+            throw e;
         }
-    
-    
+
+        if (response.getStatus() >= 400) {
+            requestLogger.error("<= Status {}", response.getStatus());
+        } else {
+            requestLogger.info("<= Status {}", response.getStatus());
+        }
+
+        filterChain.doFilter(request, response);
+
+        requestLogger.info("<= Status {}", response.getStatus());
+
+    }
+
 }

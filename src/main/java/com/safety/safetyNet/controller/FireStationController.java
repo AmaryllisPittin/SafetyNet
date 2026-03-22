@@ -39,8 +39,14 @@ public class FireStationController {
     }
 
     @GetMapping
-    public List<FireStation> getAllFireStations() throws Exception {
-        return fireStationService.getAllFireStations();
+    public ResponseEntity<List<FireStation>> getAllFireStations() {
+
+        try {
+            List<FireStation> result = fireStationService.getAllFireStations();
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // Méthode GET

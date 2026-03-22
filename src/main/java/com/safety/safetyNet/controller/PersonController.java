@@ -18,6 +18,7 @@ import com.safety.safetynet.model.Person;
 import com.safety.safetynet.service.PersonService;
 
 @RestController
+@RequestMapping("/persons")
 public class PersonController {
 
     private final PersonService personService;
@@ -26,55 +27,8 @@ public class PersonController {
         this.personService = personService;
     }
 
-    // http://localhost:8080/personInfolastName=%3ClastName
-    @GetMapping("/personInfolastName")
-    public ResponseEntity<List<Person>> getPersonByLastName(@RequestParam("lastName") String lastName)
-            throws Exception {
-        try {
-            List<Person> persons = personService.getPersonByLastName(lastName);
-            if (persons.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok(persons);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    // http://localhost:8080/communityEmail?city=%3Ccity
-    @GetMapping("/communityEmail")
-    public ResponseEntity<List<String>> getEmailByCity(@RequestParam("city") String city)
-            throws Exception {
-        try {
-            List<String> emails = personService.getAllPersons().stream()
-                    .filter(p -> p.getCity().equalsIgnoreCase(city))
-                    .map(Person::getEmail)
-                    .toList();
-
-            if (emails.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-            return ResponseEntity.ok(emails);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @RequestMapping("/persons")
-    @GetMapping
-    public ResponseEntity<List<Person>> getAllPersons() throws Exception {
-        try {
-            List<Person> persons = personService.getAllPersons();
-            return ResponseEntity.ok(persons);
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
     // Méthode GET
-    @GetMapping("/persons")
+    @GetMapping
     public ResponseEntity<List<Person>> getPersonByName(@RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName) throws Exception {
         try {
@@ -84,9 +38,8 @@ public class PersonController {
             } else {
                 persons = personService.getAllPersons();
             }
-            if (persons.isEmpty())
-                return ResponseEntity.notFound().build();
             return ResponseEntity.ok(persons);
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

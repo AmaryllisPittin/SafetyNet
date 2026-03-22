@@ -14,6 +14,8 @@ import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,93 +26,98 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.safety.safetynet.config.LoggingFilter;
 import com.safety.safetynet.controller.PersonController;
 import com.safety.safetynet.model.Person;
 import com.safety.safetynet.service.PersonService;
 
-@WebMvcTest(PersonController.class)
+@WebMvcTest(controllers = PersonController.class, excludeFilters = {
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = LoggingFilter.class)
+})
 @ContextConfiguration(classes = com.safety.safetynet.MainSafetyNet.class)
 public class PersonControllerTests {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @MockBean
-    private PersonService personService;
+        @MockBean
+        private PersonService personService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+        private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Test
-    void shouldReturnListOfPersons() throws Exception {
+        @Test
+        void shouldReturnListOfPersons() throws Exception {
 
-        Person p1 = new Person("John", "Boyd", "1509 Culver St", "Culver", "97451", "841-874-6512", "jaboyd@email.com");
-        Person p2 = new Person("Jacob", "Boyd", "1509 Culver St", "Culver", "97451", "841-874-6513", "drk@email.com");
-        List<Person> persons = Arrays.asList(p1, p2);
+                Person p1 = new Person("John", "Boyd", "1509 Culver St", "Culver", "97451", "841-874-6512",
+                                "jaboyd@email.com");
+                Person p2 = new Person("Jacob", "Boyd", "1509 Culver St", "Culver", "97451", "841-874-6513",
+                                "drk@email.com");
+                List<Person> persons = Arrays.asList(p1, p2);
 
-        // Mock du service
-        when(personService.getAllPersons()).thenReturn(persons);
+                // Mock du service
+                when(personService.getAllPersons()).thenReturn(persons);
 
-        // Test sur l'endpoint
-        mockMvc.perform(get("/persons")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(persons)));
+                // Test sur l'endpoint
+                mockMvc.perform(get("/persons")
+                                .contentType(MediaType.APPLICATION_JSON))
+                                .andExpect(status().isOk())
+                                .andExpect(content().json(objectMapper.writeValueAsString(persons)));
 
-        // Vérification que le service n'est appelé qu'une fois
-        verify(personService, times(1)).getAllPersons();
-        verifyNoMoreInteractions(personService);
-    }
+                // Vérification que le service n'est appelé qu'une fois
+                verify(personService, times(1)).getAllPersons();
+                verifyNoMoreInteractions(personService);
+        }
 
-    @Test
-    void shouldGetAllPersonsReturnEmptyList() throws Exception {
+        @Test
+        void shouldGetAllPersonsReturnEmptyList() throws Exception {
 
-        when(personService.getAllPersons()).thenReturn(Collections.emptyList());
+                when(personService.getAllPersons()).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/persons")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json("[]"));
+                mockMvc.perform(get("/persons")
+                                .contentType(MediaType.APPLICATION_JSON))
+                                .andExpect(status().isOk())
+                                .andExpect(content().json("[]"));
 
-        verify(personService, times(1)).getAllPersons();
-        verifyNoMoreInteractions(personService);
-    }
+                verify(personService, times(1)).getAllPersons();
+                verifyNoMoreInteractions(personService);
+        }
 
-    @Test
-    void GetAllPersonsThrowException() throws Exception {
-        when(personService.getAllPersons()).thenThrow(new RuntimeException("Service failure"));
+        @Test
+        void GetAllPersonsThrowException() throws Exception {
+                when(personService.getAllPersons()).thenThrow(new RuntimeException("Service failure"));
 
-        mockMvc.perform(get("/persons")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isInternalServerError());
+                mockMvc.perform(get("/persons")
+                                .contentType(MediaType.APPLICATION_JSON))
+                                .andExpect(status().isInternalServerError());
 
-        verify(personService, times(1)).getAllPersons();
-        verifyNoMoreInteractions(personService);
-    }
+                verify(personService, times(1)).getAllPersons();
+                verifyNoMoreInteractions(personService);
+        }
 
-    @Test
-    void getPersonByName_shouldReturn200() throws Exception {
-        Person tessa = new Person("Tessa", "Carman", "834 Binoc Ave", "Culver", "97451", "841-874-6512",
-                "tenz@email.com");
-        Mockito.when(personService.getPersonByName("Tessa", "Carman"))
-                .thenReturn(List.of(tessa));
+        @Test
+        void getPersonByName_shouldReturn200() throws Exception {
+                Person tessa = new Person("Tessa", "Carman", "834 Binoc Ave", "Culver", "97451", "841-874-6512",
+                                "tenz@email.com");
+                Mockito.when(personService.getPersonByName("Tessa", "Carman"))
+                                .thenReturn(List.of(tessa));
 
-        mockMvc.perform(
-                get("/persons")
-                        .param("firstName", "Tessa")
-                        .param("lastName", "Carman"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].firstName").value("Tessa"))
-                .andExpect(jsonPath("$[0].lastName").value("Carman"));
-    }
+                mockMvc.perform(
+                                get("/persons")
+                                                .param("firstName", "Tessa")
+                                                .param("lastName", "Carman"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$[0].firstName").value("Tessa"))
+                                .andExpect(jsonPath("$[0].lastName").value("Carman"));
+        }
 
-    @Test
-    void deletePerson_shouldReturnOk() throws Exception {
-        Mockito.when(personService.deletePerson("Tessa", "Carman")).thenReturn(true);
+        @Test
+        void deletePerson_shouldReturnOk() throws Exception {
+                Mockito.when(personService.deletePerson("Tessa", "Carman")).thenReturn(true);
 
-        mockMvc.perform(delete("/persons/Tessa/Carman"))
-                .andExpect(status().isOk());
+                mockMvc.perform(delete("/persons/Tessa/Carman"))
+                                .andExpect(status().isOk());
 
-        Mockito.verify(personService).deletePerson("Tessa", "Carman");
-    }
+                Mockito.verify(personService).deletePerson("Tessa", "Carman");
+        }
 
 }
