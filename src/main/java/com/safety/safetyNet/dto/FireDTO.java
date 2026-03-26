@@ -11,6 +11,20 @@ public class FireDTO {
     private List<String> allergie;
     private String station;
 
+    public FireDTO() {
+    };
+
+    public FireDTO(String firstName, String lastName, String phone, int age,
+            List<String> medication, List<String> allergie, String station) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phone = phone;
+        this.age = age;
+        this.medication = medication;
+        this.allergie = allergie;
+        this.station = station;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -66,4 +80,5 @@ public class FireDTO {
     public void setStation(String station) {
         this.station = station;
     }
+
 }
