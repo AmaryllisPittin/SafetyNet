@@ -7,6 +7,14 @@ public class FloodStationDTO {
     private List<PersonInfo> residents = new ArrayList<>();
     private String address;
 
+    public FloodStationDTO() {
+    };
+
+    public FloodStationDTO(List<PersonInfo> residents, String address) {
+        this.residents = residents;
+        this.address = address;
+    }
+
     // getters - setters
 
     public List<PersonInfo> getResidents() {
