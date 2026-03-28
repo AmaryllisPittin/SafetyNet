@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -18,13 +19,20 @@ import java.util.Map;
 public class JsonReader {
 
     private static final String FILE_PATH = "/data.json";
-    private static final String EXTERNAL_FILE_PATH = "target/data/data.json";
+    private static final String EXTERNAL_FILE_PATH = "config/data.json";
 
     public static void initDataFile() throws IOException {
         File file = new File(EXTERNAL_FILE_PATH);
         if (!file.exists()) {
+            File parentDir = file.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                parentDir.mkdirs();
+            }
+            // Lecture du fichier depuis resources
             try (InputStream is = JsonReader.class.getResourceAsStream(FILE_PATH)) {
-                Files.createDirectories(file.getParentFile().toPath());
+                if (is == null) {
+                    throw new FileNotFoundException("Le fichier " + FILE_PATH + "est introuvable dans resources.");
+                }
                 Files.copy(is, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
         }
