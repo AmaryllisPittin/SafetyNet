@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
@@ -61,18 +62,22 @@ public class JsonReader {
         mapper.writerWithDefaultPrettyPrinter().writeValue(file, data);
     }
 
-    public static List<MedicalRecord> readMedicalRecord() throws Exception {
+    public static List<MedicalRecord> readMedicalRecord() throws IOException {
 
         ObjectMapper mapper = new ObjectMapper();
-        InputStream is = JsonReader.class.getResourceAsStream(FILE_PATH);
-        Map<String, Object> data = mapper.readValue(is, new TypeReference<Map<String, Object>>() {
-        });
+        File file = new File(EXTERNAL_FILE_PATH);
+
+        Map<String, Object> data;
+        try (InputStream is = new FileInputStream(file)) {
+            data = mapper.readValue(is, new TypeReference<Map<String, Object>>() {
+            });
+        }
 
         List<MedicalRecord> medicalRecords = mapper.convertValue(
                 data.get("medicalrecords"),
                 mapper.getTypeFactory().constructCollectionType(List.class, MedicalRecord.class));
-        return medicalRecords;
 
+        return medicalRecords;
     }
 
     public static void writeMedicalRecord(List<MedicalRecord> medicalRecords) throws IOException {
@@ -88,13 +93,18 @@ public class JsonReader {
     public static List<FireStation> readFireStations() throws Exception {
 
         ObjectMapper mapper = new ObjectMapper();
-        InputStream is = JsonReader.class.getResourceAsStream(FILE_PATH);
-        Map<String, Object> data = mapper.readValue(is, new TypeReference<Map<String, Object>>() {
-        });
+        File file = new File(EXTERNAL_FILE_PATH);
+
+        Map<String, Object> data;
+        try (InputStream is = new FileInputStream(file)) {
+            data = mapper.readValue(is, new TypeReference<Map<String, Object>>() {
+            });
+        }
 
         List<FireStation> fireStations = mapper.convertValue(
                 data.get("firestations"),
                 mapper.getTypeFactory().constructCollectionType(List.class, FireStation.class));
+
         return fireStations;
     }
 
