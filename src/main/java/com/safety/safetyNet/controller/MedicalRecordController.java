@@ -56,14 +56,15 @@ public class MedicalRecordController {
     }
 
     @PutMapping("/{firstName}/{lastName}")
-    public ResponseEntity<Void> updateMedicalRecord(@PathVariable String firstName,
+    public ResponseEntity<Void> updateMedicalRecord(@PathVariable String firstName, @PathVariable String lastName,
             @RequestBody MedicalRecord updatedMedicalRecord) throws Exception {
         boolean updated = medicalRecordService.updateMedicalRecord(firstName, updatedMedicalRecord);
         return updated ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{firstName}/{lastName}")
-    public ResponseEntity<Void> deleteMedicalRecord(@PathVariable String firstName, String lastName) throws Exception {
+    public ResponseEntity<Void> deleteMedicalRecord(@PathVariable String firstName, @PathVariable String lastName)
+            throws Exception {
         boolean deleted = medicalRecordService.deleteMedicalRecord(firstName, lastName);
         return deleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
