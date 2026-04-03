@@ -6,6 +6,14 @@ public class PersonDTO {
     private String address;
     private String phone;
 
+    public PersonDTO(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public PersonDTO() {
+    };
+
     public String getFirstName() {
         return firstName;
     }
