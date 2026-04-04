@@ -39,7 +39,7 @@ public class LoggingFilter extends OncePerRequestFilter {
             requestLogger.info("<= Status {}", response.getStatus());
         }
 
-        filterChain.doFilter(request, response);
+        // filterChain.doFilter(request, response);
 
         requestLogger.info("<= Status {}", response.getStatus());
 

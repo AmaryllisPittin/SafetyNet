@@ -11,8 +11,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -20,20 +18,14 @@ import java.util.Map;
 public class JsonReader {
 
     private static final String FILE_PATH = "/data.json";
-    private static final String EXTERNAL_FILE_PATH = "config/data.json";
+    private static final String EXTERNAL_FILE_PATH = "target/data/data.json";
 
     public static void initDataFile() throws IOException {
         File file = new File(EXTERNAL_FILE_PATH);
         if (!file.exists()) {
-            File parentDir = file.getParentFile();
-            if (parentDir != null && !parentDir.exists()) {
-                parentDir.mkdirs();
-            }
             // Lecture du fichier depuis resources
             try (InputStream is = JsonReader.class.getResourceAsStream(FILE_PATH)) {
-                if (is == null) {
-                    throw new FileNotFoundException("Le fichier " + FILE_PATH + "est introuvable dans resources.");
-                }
+                Files.createDirectories(file.getParentFile().toPath());
                 Files.copy(is, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
         }
@@ -62,22 +54,18 @@ public class JsonReader {
         mapper.writerWithDefaultPrettyPrinter().writeValue(file, data);
     }
 
-    public static List<MedicalRecord> readMedicalRecord() throws IOException {
+    public static List<MedicalRecord> readMedicalRecord() throws Exception {
 
         ObjectMapper mapper = new ObjectMapper();
-        File file = new File(EXTERNAL_FILE_PATH);
-
-        Map<String, Object> data;
-        try (InputStream is = new FileInputStream(file)) {
-            data = mapper.readValue(is, new TypeReference<Map<String, Object>>() {
-            });
-        }
+        InputStream is = JsonReader.class.getResourceAsStream(FILE_PATH);
+        Map<String, Object> data = mapper.readValue(is, new TypeReference<Map<String, Object>>() {
+        });
 
         List<MedicalRecord> medicalRecords = mapper.convertValue(
                 data.get("medicalrecords"),
                 mapper.getTypeFactory().constructCollectionType(List.class, MedicalRecord.class));
-
         return medicalRecords;
+
     }
 
     public static void writeMedicalRecord(List<MedicalRecord> medicalRecords) throws IOException {
@@ -93,18 +81,13 @@ public class JsonReader {
     public static List<FireStation> readFireStations() throws Exception {
 
         ObjectMapper mapper = new ObjectMapper();
-        File file = new File(EXTERNAL_FILE_PATH);
-
-        Map<String, Object> data;
-        try (InputStream is = new FileInputStream(file)) {
-            data = mapper.readValue(is, new TypeReference<Map<String, Object>>() {
-            });
-        }
+        InputStream is = JsonReader.class.getResourceAsStream(FILE_PATH);
+        Map<String, Object> data = mapper.readValue(is, new TypeReference<Map<String, Object>>() {
+        });
 
         List<FireStation> fireStations = mapper.convertValue(
                 data.get("firestations"),
                 mapper.getTypeFactory().constructCollectionType(List.class, FireStation.class));
-
         return fireStations;
     }
 

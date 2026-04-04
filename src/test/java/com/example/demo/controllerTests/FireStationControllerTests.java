@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -169,6 +171,18 @@ public class FireStationControllerTests {
                                         .andExpect(jsonPath("$.minors").value(1));
 
                 }
+        }
+
+        @Test
+        void AddFireStation_shouldReturnCreated() throws Exception {
+                FireStation fireStation = new FireStation("1510 Culver St", "6");
+
+                mockMvc.perform(post("/firestation")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(fireStation)))
+                                .andExpect(status().isCreated());
+
+                verify(fireStationService).addFireStation(any(FireStation.class));
         }
 
 }

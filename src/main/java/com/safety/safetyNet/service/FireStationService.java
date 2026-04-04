@@ -89,6 +89,9 @@ public class FireStationService {
 
         List<ChildAlertDTO> children = new ArrayList<>();
 
+        System.out.println("Household size : " + household.size());
+        household.forEach(p -> System.out.println(p.getFirstName() + " " + p.getLastName()));
+
         for (Person person : household) {
 
             MedicalRecord mr = medicalRecords.stream()

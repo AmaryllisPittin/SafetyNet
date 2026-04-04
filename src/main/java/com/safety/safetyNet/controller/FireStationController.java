@@ -91,7 +91,9 @@ public class FireStationController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> addFireStation(@RequestBody FireStation fireStation) throws Exception {
+    public ResponseEntity<Void> addFireStation(@RequestParam String address, @RequestParam String station)
+            throws Exception {
+        FireStation fireStation = new FireStation(address, station);
         fireStationService.addFireStation(fireStation);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
