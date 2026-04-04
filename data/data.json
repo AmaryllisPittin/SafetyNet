@@ -199,6 +199,14 @@
     "zip" : "97456",
     "phone" : "841-874-6516",
     "email" : "adossantos@email.com"
+  }, {
+    "firstName" : "Philippe",
+    "lastName" : "Etchebest",
+    "address" : "1509 Culver St",
+    "city" : "Culver",
+    "zip" : "123456",
+    "phone" : "123-456-7890",
+    "email" : "petchebest@email.com"
   } ],
   "firestations" : [ {
     "address" : "1509 Culver St",

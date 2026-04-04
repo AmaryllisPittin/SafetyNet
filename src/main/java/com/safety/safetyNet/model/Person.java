@@ -1,5 +1,7 @@
 package com.safety.safetynet.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Person {
     private String firstName;
     private String lastName;
@@ -10,6 +12,7 @@ public class Person {
     private String email;
 
     // Jointure avec le medicalRecord
+    @JsonIgnore
     private MedicalRecord medicalRecord;
 
     public Person() {

@@ -18,7 +18,7 @@ import java.util.Map;
 public class JsonReader {
 
     private static final String FILE_PATH = "/data.json";
-    private static final String EXTERNAL_FILE_PATH = "target/data/data.json";
+    private static final String EXTERNAL_FILE_PATH = "data/data.json";
 
     public static void initDataFile() throws IOException {
         File file = new File(EXTERNAL_FILE_PATH);
@@ -57,7 +57,7 @@ public class JsonReader {
     public static List<MedicalRecord> readMedicalRecord() throws Exception {
 
         ObjectMapper mapper = new ObjectMapper();
-        InputStream is = JsonReader.class.getResourceAsStream(FILE_PATH);
+        InputStream is = JsonReader.class.getResourceAsStream(EXTERNAL_FILE_PATH);
         Map<String, Object> data = mapper.readValue(is, new TypeReference<Map<String, Object>>() {
         });
 
@@ -81,7 +81,7 @@ public class JsonReader {
     public static List<FireStation> readFireStations() throws Exception {
 
         ObjectMapper mapper = new ObjectMapper();
-        InputStream is = JsonReader.class.getResourceAsStream(FILE_PATH);
+        InputStream is = JsonReader.class.getResourceAsStream(EXTERNAL_FILE_PATH);
         Map<String, Object> data = mapper.readValue(is, new TypeReference<Map<String, Object>>() {
         });
 
