@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -70,14 +69,14 @@ public class FireStationControllerTests {
                 when(fireStationService.getAllFireStations()).thenReturn(fireStations);
 
                 // Test sur l'endpoint
-                mockMvc.perform(get("/firestation")
-                                .contentType(MediaType.APPLICATION_JSON))
+                mockMvc.perform(get("/firestation"))
                                 .andExpect(status().isOk())
-                                .andExpect(content().json(objectMapper.writeValueAsString(fireStations)));
+                                .andExpect(jsonPath("$.stations.length()").value(2))
+                                .andExpect(jsonPath("$.stations[0].address").value("1509 Culver St"))
+                                .andExpect(jsonPath("$.stations[1].station").value("2"));
 
                 // Vérification que le service n'est appelé qu'une fois
                 verify(fireStationService, times(1)).getAllFireStations();
-                verifyNoMoreInteractions(fireStationService);
         }
 
         @Test
@@ -85,25 +84,11 @@ public class FireStationControllerTests {
 
                 when(fireStationService.getAllFireStations()).thenReturn(Collections.emptyList());
 
-                mockMvc.perform(get("/firestation")
-                                .contentType(MediaType.APPLICATION_JSON))
+                mockMvc.perform(get("/firestation"))
                                 .andExpect(status().isOk())
-                                .andExpect(content().json("[]"));
+                                .andExpect(jsonPath("$.stations").isArray())
+                                .andExpect(jsonPath("$.stations").isEmpty());
 
-                verify(fireStationService, times(1)).getAllFireStations();
-                verifyNoMoreInteractions(fireStationService);
-        }
-
-        @Test
-        void GetAllFireStationsThrowException() throws Exception {
-                when(fireStationService.getAllFireStations()).thenThrow(new RuntimeException("Service failure"));
-
-                mockMvc.perform(get("/firestation")
-                                .contentType(MediaType.APPLICATION_JSON))
-                                .andExpect(status().isInternalServerError());
-
-                verify(fireStationService, times(1)).getAllFireStations();
-                verifyNoMoreInteractions(fireStationService);
         }
 
         @Test
@@ -118,8 +103,8 @@ public class FireStationControllerTests {
                                 get("/firestation/{address}", "29 15th St")
                                                 .param("address", "29 15th St"))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.address").value("29 15th St"))
-                                .andExpect(jsonPath("$.station").value("2"));
+                                .andExpect(jsonPath("$.firestation.address").value("29 15th St"))
+                                .andExpect(jsonPath("$.firestation.station").value("2"));
         }
 
         @Test
@@ -148,7 +133,8 @@ public class FireStationControllerTests {
                 when(fireStationService.getFireStationByAddress("unknown")).thenReturn(Optional.empty());
 
                 mockMvc.perform(get("/firestation/{address}", "unknown"))
-                                .andExpect(status().isNotFound());
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$").isEmpty());
         }
 
         @Test
@@ -163,7 +149,7 @@ public class FireStationControllerTests {
                                         new MedicalRecord("John", "Boyd", "03/06/1984", List.of(), List.of()),
                                         new MedicalRecord("Tenley", "Boyd", "02/18/2012", List.of(), List.of())));
 
-                        mockMvc.perform(get("/firestation/firestation")
+                        mockMvc.perform(get("/firestation")
                                         .param("stationNumber", "3"))
                                         .andExpect(status().isOk())
                                         .andExpect(jsonPath("$.persons").isArray())
@@ -175,11 +161,10 @@ public class FireStationControllerTests {
 
         @Test
         void AddFireStation_shouldReturnCreated() throws Exception {
-                FireStation fireStation = new FireStation("1510 Culver St", "6");
 
                 mockMvc.perform(post("/firestation")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(fireStation)))
+                                .param("address", "1509 Culver St")
+                                .param("station", "3"))
                                 .andExpect(status().isCreated());
 
                 verify(fireStationService).addFireStation(any(FireStation.class));

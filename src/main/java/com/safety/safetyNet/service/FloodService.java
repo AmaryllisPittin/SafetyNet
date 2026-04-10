@@ -55,8 +55,10 @@ public class FloodService {
                 info.setLastName(p.getLastName());
                 info.setPhone(p.getPhone());
 
-                MedicalRecord med = medicalRecordService.getMedicalRecordByFirstName(p.getFirstName())
-                        .orElse(null);
+                List<MedicalRecord> meds = medicalRecordService.getMedicalRecordByName(p.getFirstName(),
+                        p.getLastName());
+
+                MedicalRecord med = meds.isEmpty() ? null : meds.get(0);
 
                 if (med != null) {
                     info.setMedications(med.getMedications());

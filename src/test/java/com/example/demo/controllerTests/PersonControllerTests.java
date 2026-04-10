@@ -7,6 +7,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -20,12 +22,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safety.safetynet.config.LoggingFilter;
 import com.safety.safetynet.controller.PersonController;
 import com.safety.safetynet.model.Person;
@@ -43,7 +45,7 @@ public class PersonControllerTests {
         @MockBean
         private PersonService personService;
 
-        private final ObjectMapper objectMapper = new ObjectMapper();
+        // private final ObjectMapper objectMapper = new ObjectMapper();
 
         @Test
         void shouldReturnListOfPersons() throws Exception {
@@ -58,13 +60,13 @@ public class PersonControllerTests {
                 when(personService.getAllPersons()).thenReturn(persons);
 
                 // Test sur l'endpoint
-                mockMvc.perform(get("/persons")
-                                .contentType(MediaType.APPLICATION_JSON))
+                mockMvc.perform(get("/person"))
                                 .andExpect(status().isOk())
-                                .andExpect(content().json(objectMapper.writeValueAsString(persons)));
+                                .andExpect(jsonPath("$.length()").value(2))
+                                .andExpect(jsonPath("$[0].firstName").value("John"));
 
                 // Vérification que le service n'est appelé qu'une fois
-                verify(personService, times(1)).getAllPersons();
+                verify(personService).getAllPersons();
                 verifyNoMoreInteractions(personService);
         }
 
@@ -73,7 +75,7 @@ public class PersonControllerTests {
 
                 when(personService.getAllPersons()).thenReturn(Collections.emptyList());
 
-                mockMvc.perform(get("/persons")
+                mockMvc.perform(get("/person")
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk())
                                 .andExpect(content().json("[]"));
@@ -86,7 +88,7 @@ public class PersonControllerTests {
         void GetAllPersonsThrowException() throws Exception {
                 when(personService.getAllPersons()).thenThrow(new RuntimeException("Service failure"));
 
-                mockMvc.perform(get("/persons")
+                mockMvc.perform(get("/person")
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isInternalServerError());
 
@@ -102,7 +104,7 @@ public class PersonControllerTests {
                                 .thenReturn(List.of(tessa));
 
                 mockMvc.perform(
-                                get("/persons")
+                                get("/person")
                                                 .param("firstName", "Tessa")
                                                 .param("lastName", "Carman"))
                                 .andExpect(status().isOk())
@@ -114,10 +116,36 @@ public class PersonControllerTests {
         void deletePerson_shouldReturnOk() throws Exception {
                 Mockito.when(personService.deletePerson("Tessa", "Carman")).thenReturn(true);
 
-                mockMvc.perform(delete("/persons/Tessa/Carman"))
+                mockMvc.perform(delete("/person/Tessa/Carman"))
                                 .andExpect(status().isOk());
 
                 Mockito.verify(personService).deletePerson("Tessa", "Carman");
+        }
+
+        @Test
+        void shouldUpdatePerson() throws Exception {
+
+                String updatedJson = """
+                                {
+                                        "firstName" : "John",
+                                        "lastName" : "Boyd",
+                                        "address" : "1509 Culver St",
+                                        "city" : "Culver",
+                                        "zip" : "97481",
+                                        "phone" : "841-874-6512",
+                                        "email" : "jaboyd@email.com"
+                                }
+                                """;
+
+                when(personService.updatePerson(eq("John"), eq("Boyd"), any(Person.class))).thenReturn(true);
+
+                mockMvc.perform(put("/person/John/Boyd")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(updatedJson))
+                                .andExpect(status().isOk());
+
+                verify(personService, times(1)).updatePerson(eq("John"), eq("Boyd"), any(Person.class));
+                verifyNoMoreInteractions(personService);
         }
 
 }

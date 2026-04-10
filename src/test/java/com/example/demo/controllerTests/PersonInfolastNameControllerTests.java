@@ -18,35 +18,36 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.safety.safetynet.config.LoggingFilter;
 import com.safety.safetynet.controller.PersonInfolastNameController;
-import com.safety.safetynet.model.Person;
-import com.safety.safetynet.service.PersonService;
+import com.safety.safetynet.dto.PersonInfolastNameDTO;
+import com.safety.safetynet.service.PersonInfolastNameService;
 
 @WebMvcTest(controllers = PersonInfolastNameController.class, excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = LoggingFilter.class)
+                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = LoggingFilter.class)
 })
 @ContextConfiguration(classes = com.safety.safetynet.MainSafetyNet.class)
 public class PersonInfolastNameControllerTests {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @MockBean
-    private PersonService personService;
+        @MockBean
+        private PersonInfolastNameService personInfolastNameService;
 
-    @Test
-    void shouldReturnListOfPersonsByLastName() throws Exception {
+        @Test
+        void shouldReturnListOfPersonsByLastName() throws Exception {
 
-        Person p1 = new Person("John", "Boyd", "1509 Culver St", "Culver", "97451", "841-874-6512",
-                "jaboyd@email.com");
-        Person p2 = new Person("Jacob", "Boyd", "1509 Culver St", "Culver", "97451", "841-874-6513",
-                "drk@email.com");
+                PersonInfolastNameDTO p1 = new PersonInfolastNameDTO();
+                PersonInfolastNameDTO p2 = new PersonInfolastNameDTO();
 
-        Mockito.when(personService.getPersonByLastName("Boyd"))
-                .thenReturn(List.of(p1, p2));
+                p1.setLastName("Boyd");
+                p2.setLastName("Boyd");
 
-        mockMvc.perform(get("/personInfolastName").param("lastName", "Boyd"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2));
+                Mockito.when(personInfolastNameService.getPersonByLastName("Boyd"))
+                                .thenReturn(List.of(p1, p2));
 
-    }
+                mockMvc.perform(get("/personInfolastName").param("lastName", "Boyd"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.length()").value(2));
+
+        }
 }

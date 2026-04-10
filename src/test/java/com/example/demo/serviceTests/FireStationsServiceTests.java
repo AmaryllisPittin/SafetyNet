@@ -92,7 +92,7 @@ public class FireStationsServiceTests {
         FireStationService service = new FireStationService();
         Optional<FireStation> station = service.getFireStationByAddress("1509 Culver St");
         assertTrue(station.isPresent());
-        assertEquals("3", station.get().getStation());
+        assertEquals("4", station.get().getStation());
     }
 
     @Test

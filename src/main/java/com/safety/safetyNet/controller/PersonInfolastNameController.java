@@ -8,24 +8,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.safety.safetynet.model.Person;
-import com.safety.safetynet.service.PersonService;
+import com.safety.safetynet.dto.PersonInfolastNameDTO;
+import com.safety.safetynet.service.PersonInfolastNameService;
 
 @RestController
 public class PersonInfolastNameController {
 
-    private final PersonService personService;
+    private final PersonInfolastNameService personInfolastNameService;
 
-    public PersonInfolastNameController(PersonService personService) {
-        this.personService = personService;
+    public PersonInfolastNameController(PersonInfolastNameService personInfolastNameService) {
+        this.personInfolastNameService = personInfolastNameService;
     }
 
     // http://localhost:8080/personInfolastName=%3ClastName
     @GetMapping("/personInfolastName")
-    public ResponseEntity<List<Person>> getPersonByLastName(@RequestParam("lastName") String lastName)
+    public ResponseEntity<List<PersonInfolastNameDTO>> getPersonByLastName(@RequestParam("lastName") String lastName)
             throws Exception {
         try {
-            List<Person> persons = personService.getPersonByLastName(lastName);
+            List<PersonInfolastNameDTO> persons = personInfolastNameService.getPersonByLastName(lastName);
             if (persons.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }

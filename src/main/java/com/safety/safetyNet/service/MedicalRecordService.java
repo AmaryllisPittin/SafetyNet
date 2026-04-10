@@ -1,7 +1,7 @@
 package com.safety.safetynet.service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -16,10 +16,11 @@ public class MedicalRecordService {
     }
 
     // Récupération des données médicales d'une personne par son prénom
-    public Optional<MedicalRecord> getMedicalRecordByFirstName(String firstName) throws Exception {
+    public List<MedicalRecord> getMedicalRecordByName(String firstName, String lastName) throws Exception {
         return getAllMedicalRecords().stream()
-                .filter(p -> p.getFirstName().equalsIgnoreCase(firstName))
-                .findFirst();
+                .filter(p -> p.getFirstName().equalsIgnoreCase(firstName)
+                        && p.getLastName().equalsIgnoreCase(lastName))
+                .collect(Collectors.toList());
     }
 
     // Ajouter pour une personne

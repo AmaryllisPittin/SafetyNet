@@ -38,24 +38,17 @@ public class FireStationController {
         return fireStationService.getAllFireStations();
     }
 
-    @GetMapping
-    public ResponseEntity<List<FireStation>> getAllFireStations() {
-
-        try {
-            List<FireStation> result = fireStationService.getAllFireStations();
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
     // Méthode GET
     @GetMapping("/{address}")
-    public ResponseEntity<FireStation> getFireStationByAddress(@PathVariable String address) {
+    public ResponseEntity<Map<String, Object>> getFireStationByAddress(@PathVariable String address) {
         try {
             return fireStationService.getFireStationByAddress(address)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
+                    .map(fs -> {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("firestation", fs);
+                        return ResponseEntity.ok(map);
+                    })
+                    .orElseGet(() -> ResponseEntity.ok(new HashMap<>()));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -63,8 +56,20 @@ public class FireStationController {
     }
 
     // http://localhost:8080/firestation?stationNumber=<station_number>
-    @GetMapping("firestation")
-    public Map<String, Object> getPersonByStation(@RequestParam("stationNumber") String station) throws Exception {
+    @GetMapping
+    public Map<String, Object> getPersonByStation(
+            @RequestParam(value = "stationNumber", required = false) String station) throws Exception {
+
+        Map<String, Object> response = new HashMap<>();
+
+        // Cas 1 : pas de paramètre, tout afficher
+        if (station == null) {
+            response.put("stations", fireStationService.getAllFireStations());
+            return response;
+        }
+
+        // Cas 2 : filtre par numéro de station
+
         int stationNumber = Integer.parseInt(station);
         List<PersonDTO> persons = fireStationService.getPersonByStation(stationNumber);
         List<MedicalRecord> medicalRecords = JsonReader.readMedicalRecord();
@@ -82,12 +87,12 @@ public class FireStationController {
 
         long adults = persons.size() - minors;
 
-        Map<String, Object> response = new HashMap<>();
         response.put("persons", persons);
         response.put("minors", minors);
         response.put("adults", adults);
 
         return response;
+
     }
 
     @PostMapping
@@ -102,6 +107,9 @@ public class FireStationController {
     public ResponseEntity<Void> updateFireStation(@PathVariable String address,
             @RequestBody FireStation updatedFireStation)
             throws Exception {
+
+        updatedFireStation.setAddress(address);
+
         boolean updated = fireStationService.updateFireStation(address, updatedFireStation);
         return updated ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }

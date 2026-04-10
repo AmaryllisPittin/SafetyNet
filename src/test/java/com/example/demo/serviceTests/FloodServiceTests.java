@@ -6,7 +6,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,7 +71,7 @@ public class FloodServiceTests {
 
         when(fireStationService.getAllFireStations()).thenReturn(List.of(fireStation));
         when(personService.getAllPersons()).thenReturn(List.of(person));
-        when(medicalRecordService.getMedicalRecordByFirstName("John")).thenReturn(Optional.of(med));
+        when(medicalRecordService.getMedicalRecordByName("John", "Boyd")).thenReturn(List.of(med));
 
         var response = floodService.getResidentsByStation(List.of("3"));
 

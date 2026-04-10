@@ -38,11 +38,16 @@ public class MedicalRecordController {
 
     // Méthode GET
     @GetMapping("/{firstName}/{lastName}")
-    public ResponseEntity<MedicalRecord> getMedicalRecordByFirstName(@PathVariable String firstName) {
+    public ResponseEntity<List<MedicalRecord>> getMedicalRecordByName(@PathVariable String firstName,
+            @PathVariable String lastName) {
         try {
-            return medicalRecordService.getMedicalRecordByFirstName(firstName)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
+            List<MedicalRecord> records = medicalRecordService.getMedicalRecordByName(firstName, lastName);
+            if (records.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok(records);
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -58,6 +63,10 @@ public class MedicalRecordController {
     @PutMapping("/{firstName}/{lastName}")
     public ResponseEntity<Void> updateMedicalRecord(@PathVariable String firstName, @PathVariable String lastName,
             @RequestBody MedicalRecord updatedMedicalRecord) throws Exception {
+
+        updatedMedicalRecord.setFirstName(firstName);
+        updatedMedicalRecord.setLastName(lastName);
+
         boolean updated = medicalRecordService.updateMedicalRecord(firstName, updatedMedicalRecord);
         return updated ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }

@@ -55,10 +55,10 @@ public class JsonReader {
     }
 
     public static List<MedicalRecord> readMedicalRecord() throws Exception {
-
+        initDataFile();
         ObjectMapper mapper = new ObjectMapper();
-        InputStream is = JsonReader.class.getResourceAsStream(EXTERNAL_FILE_PATH);
-        Map<String, Object> data = mapper.readValue(is, new TypeReference<Map<String, Object>>() {
+        File file = new File(EXTERNAL_FILE_PATH);
+        Map<String, Object> data = mapper.readValue(file, new TypeReference<Map<String, Object>>() {
         });
 
         List<MedicalRecord> medicalRecords = mapper.convertValue(
@@ -79,10 +79,10 @@ public class JsonReader {
     }
 
     public static List<FireStation> readFireStations() throws Exception {
-
+        initDataFile();
         ObjectMapper mapper = new ObjectMapper();
-        InputStream is = JsonReader.class.getResourceAsStream(EXTERNAL_FILE_PATH);
-        Map<String, Object> data = mapper.readValue(is, new TypeReference<Map<String, Object>>() {
+        File file = new File(EXTERNAL_FILE_PATH);
+        Map<String, Object> data = mapper.readValue(file, new TypeReference<Map<String, Object>>() {
         });
 
         List<FireStation> fireStations = mapper.convertValue(

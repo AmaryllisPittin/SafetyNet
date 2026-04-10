@@ -21,6 +21,7 @@ import com.safety.safetynet.utils.JsonReader;
 public class FireStationService {
 
     public List<FireStation> getAllFireStations() throws Exception {
+
         return JsonReader.readFireStations();
     }
 

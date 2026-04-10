@@ -18,7 +18,7 @@ import com.safety.safetynet.model.Person;
 import com.safety.safetynet.service.PersonService;
 
 @RestController
-@RequestMapping("/persons")
+@RequestMapping("/person")
 public class PersonController {
 
     private final PersonService personService;
@@ -56,6 +56,10 @@ public class PersonController {
     public ResponseEntity<Void> updatePerson(@PathVariable String firstName, @PathVariable String lastName,
             @RequestBody Person updatedPerson)
             throws Exception {
+
+        updatedPerson.setFirstName(firstName);
+        updatedPerson.setLastName(lastName);
+
         boolean updated = personService.updatePerson(firstName, lastName, updatedPerson);
         return updated ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
