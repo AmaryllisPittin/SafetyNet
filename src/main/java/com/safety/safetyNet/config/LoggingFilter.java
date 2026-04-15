@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,24 +26,43 @@ public class LoggingFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
+        long startTime = System.currentTimeMillis();
+
+        ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request);
+        ContentCachingResponseWrapper wrappedResponse = new ContentCachingResponseWrapper(response);
+
         requestLogger.info("=> {} {}", request.getMethod(), request.getRequestURI());
 
         try {
-            filterChain.doFilter(request, response);
+            requestLogger.debug("Début traitement {}", request.getRequestURI());
+
+            filterChain.doFilter(wrappedRequest, wrappedResponse);
+
+            requestLogger.debug("Fin du traitement {}", request.getRequestURI());
+
         } catch (Exception e) {
-            requestLogger.error("Erreur lors du traitement", e);
+            requestLogger.error("Erreur lors du traitement de {}", request.getRequestURI(), e);
             throw e;
+        } finally {
+            long duration = System.currentTimeMillis() - startTime;
+            int status = wrappedResponse.getStatus();
+
+            String requestBody = new String(wrappedRequest.getContentAsByteArray(), request.getCharacterEncoding());
+            String responseBody = new String(wrappedResponse.getContentAsByteArray(), request.getCharacterEncoding());
+
+            requestLogger.debug("Request body: {}", requestBody);
+            requestLogger.debug("Response body: {}", responseBody);
+
+            if (status >= 400) {
+                requestLogger.error("<= {} {} -> status {} in {} ms", request.getMethod(), request.getRequestURI(),
+                        status, duration);
+            } else {
+                requestLogger.info("<= {} {} -> status {} in {} ms", request.getMethod(), request.getRequestURI(),
+                        status, duration);
+            }
+
+            wrappedResponse.copyBodyToResponse();
         }
-
-        if (response.getStatus() >= 400) {
-            requestLogger.error("<= Status {}", response.getStatus());
-        } else {
-            requestLogger.info("<= Status {}", response.getStatus());
-        }
-
-        // filterChain.doFilter(request, response);
-
-        requestLogger.info("<= Status {}", response.getStatus());
 
     }
 
